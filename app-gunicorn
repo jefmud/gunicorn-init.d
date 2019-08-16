@@ -1,0 +1,48 @@
+# start script for Gunicorn app workers
+APPNAME=myapp
+USER=appuser
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+ACTIVATE=/home/appuser/appenv/bin/activate
+WORKINGDIR=/home/appuser/appdir
+APPMODULE=myapp:app
+DAEMON=gunicorn
+BIND=127.0.0.1:8000
+PIDFILE=/var/run/$APPNAME.pid
+LOGFILE=/var/log/$DAEMON.log
+WORKERS=2
+
+case "$1" in
+  start)
+        # start the daemon
+        echo "** Starting deferred execution scheduler ==>" $APPNAME
+        source $ACTIVATE
+        cd $WORKINGDIR
+        $DAEMON --daemon --bind=$BIND --pid=$PIDFILE --workers=$WORKERS --user=$USER --log-file=$LOGFILE $APPMODULE
+        echo $?
+    ;;
+  stop)
+        # stop the daemon by killing the registered PID
+        echo "** Stopping deferred execution scheduler ==>" $APPNAME
+        kill -15 `cat $PIDFILE`
+        echo $?
+    ;;
+  force-reload|restart)
+    $0 stop
+    $0 start
+    ;;
+  status)
+    # if the PIDFILE exists, then show processes
+    if [ -f "$PIDFILE" ]; then
+        ps ax | grep $APPNAME
+        echo "$APPNAME is running PID=`cat $PIDFILE`"
+    else
+        echo "$APPNAME is not running"
+    fi
+    ;;
+  *)
+    echo "Usage: /etc/init.d/$APPNAME {start|stop|restart|force-reload|status}"
+    exit 1
+    ;;
+esac
+
+exit 0
