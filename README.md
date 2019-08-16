@@ -1,6 +1,8 @@
 # gunicorn-init.d
 a simple Gunicorn init.d script
 
+(idea adapted from https://gist.github.com/leplatrem/5684206)
+
 This is a minimalist SystemV approach to a script to start/stop Gunicorn.  This should work on various SystemV type Linux distros like Ubuntu, CentOS, Raspbian, etc.
 
 Gunicorn is a Pythonic WSGI server that works very well by itself, but even better running proxied through Nginx.
